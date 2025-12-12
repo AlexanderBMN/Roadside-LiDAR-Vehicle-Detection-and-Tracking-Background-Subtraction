@@ -1,6 +1,6 @@
 %%
-myTrainingDir = 'C:\Users\abaum\Documents\data\CoopScenes\seq_1\pcl\train';
-myFiles = dir(fullfile(myTrainingDir,'*.pcd'));
+myTrainingDir = 'C:\Users\abaum\Documents\data\a42\seq_4\ply\train';
+myFiles = dir(fullfile(myTrainingDir,'*.ply'));
 numFiles = length(myFiles);
 % veloReader = velodyneFileReader(fullfile(myDir, test_file_name),'VLS128');
 %%
@@ -22,8 +22,8 @@ zlimits = [-12 25];
 %%
 
 total_frame = numFiles;
-
-FOV_vert = 22.5;
+% 22.5
+FOV_vert = 90;
 FOV_horiz = 360;
 vert_total_grids = 128;
 azimuth_resltn = 0.3515625;
@@ -38,11 +38,12 @@ for k = 1:length(myFiles)
     % if ~player.isOpen()
     %     break;
     % end
-    fprintf('Training: file %d/%d verarbeitet (frame_num=%d, %s)\n', ...
-        k, numFiles, frame_num, baseFileName);
 
     baseFileName = myFiles(k).name;
     fullFileName = fullfile(myTrainingDir, baseFileName);
+
+    fprintf('Training: file %d/%d verarbeitet (frame_num=%d, %s)\n', ...
+    k, numFiles, frame_num, baseFileName);
 
     ptCloud = pcread(fullFileName);
 
@@ -127,12 +128,12 @@ frame_num = 0;
 saveBackground = 0;
 %frames = [200, 400, 600, 800, 1000, 1500, 2000];
 
-myTestingDir = 'C:\Users\abaum\Documents\data\CoopScenes\seq_1\pcl\test';
-myTestFiles = dir(fullfile(myTestingDir,'*.pcd'));
+myTestingDir = 'C:\Users\abaum\Documents\data\a42\seq_4\ply\test';
+myTestFiles = dir(fullfile(myTestingDir,'*.ply'));
 lidarData = {};
-outputFolder = "C:\Users\abaum\Documents\data\CoopScenes\seq_1\pcl\baseline";
+outputFolder = "C:\Users\abaum\Documents\data\a42\seq_4\ply\baseline";
 learning_rate = 1e-9;
-backgroundOutFolder = "./AlbanyGeorge/Backgrounds/Triangle";
+backgroundOutFolder = "C:\Users\abaum\Documents\data\a42\seq_4\ply\baseline\background";
 
 if ~exist(outputFolder, 'dir')
    mkdir(outputFolder)
@@ -151,6 +152,7 @@ for k = 1:length(myTestFiles)
     ptCloudObj = pcread(fullFileName);
 
     frame_num = frame_num + 1;
+    [~, frameName, ~] = fileparts(myTestFiles(k).name);
 
     [ptCloudOut, ~] = cropPointCloud(ptCloudObj, xlimits, ylimits, zlimits);
     
@@ -247,7 +249,7 @@ for k = 1:length(myTestFiles)
 
    % if  ismember(frame_num, frames)
 
-    str_e = sprintf('CFTA_frame_%d.ply',frame_num);
+    str_e = sprintf('%s.ply', frameName);
 
     if saveBackground == 1
 
